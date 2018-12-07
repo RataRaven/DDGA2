@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<robot name="1dhopper">
+   <material name="blue">
+	   <color rgba="0.42745098 0.97254902 0.96470588 1"/>
+  </material>
+
+ <material name="dark">
+	   <color rgba="0.13333333 0.15686275 0.19215686 1"/>
+   </material>
+
+   <material name="grey">
+    <color rgba="0.321 0.38039216 0.41960784 1"/>
+  </material>
+
+  <material name="red">
+   <color rgba="0.8 0 0 1"/>
+ </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+ <link name="balance_beam">
+    <visual>
+     <material name="grey"/>
+      <geometry>
+	      <mesh filename="dome_small.obj" scale="0.1 0.1 0.1"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+	<collision>
+<geometry>
+	      <mesh filename="dome_small.obj" scale="0.1 0.1 0.1"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+     </collision>
+         <inertial>
+     <mass value="16"/>
+     <inertia ixx="0.709" ixy="0.0" ixz="0.0" iyy="0.709" iyz="0.0" izz="0.709"/>
+     <origin rpy="0 0 0" xyz="0 0 0"/>
+   </inertial>
+  </link>
+
+ <link name="upper_base_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.04"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+       <geometry>
+         <cylinder length="0.01" radius="0.04"/>
+       </geometry>
+     </collision>
+     <inertial>
+     <mass value="0.01"/>
+     <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+   </inertial>
+
+  </link>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.5" radius="0.04"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+       <geometry>
+         <cylinder length="0.5" radius="0.04"/>
+       </geometry>
+     </collision>
+     <inertial>
+     <mass value="0.15"/>
+     <inertia ixx="0.3185000000e-2" ixy="0.0" ixz="0.0" iyy="0.3185000000e-2" iyz="0.0" izz="0.1200000000e-3"/>
+   </inertial>
+
+  </link>
+
+  <joint name="base_joint" type="fixed">
+      <axis xyz="1 0 0"/>
+      <origin xyz="0 0 0"/>
+      <!--<limit effort="1000.0" lower="-1.57079632679" upper="1.57079632679" velocity="100"/>-->
+      <limit effort="1000.0" lower="-0.8" upper="0.8" velocity="100"/>
+      <dynamics damping="0.5" friction="0.0"/>
+      <!-- <limit effort="1000.0" lower="-1.2" upper="1.2" velocity="10"/> -->
+      <parent link="upper_base_link"/>
+      <child link="base_link"/>
+
+    </joint>
+
+  <joint name="base_to_beam" type="revolute">
+      <axis xyz="0 1 0"/>
+      <origin xyz="0 0 -0.25"/>
+      <!-- <limit effort="1000.0" lower="-1.57079632679" upper="1.57079632679" velocity="100"/> -->
+      <limit effort="1000.0" lower="-0.349" upper="0.349" velocity="100"/>
+	<!--<limit effort="1000.0" lower="-0.8" upper="0.8" velocity="100"/>-->
+      <dynamics damping="0.5" friction="0.0"/>
+      <!-- <limit effort="1000.0" lower="-1.2" ugtpper="1.2" velocity="10"/> -->
+      <parent link="balance_beam"/>
+      <child link="upper_base_link"/>
+
+    </joint>
+
+    <link name="leg">
+        <visual>
+          <geometry>
+            <cylinder length="0.5" radius="0.02"/>
+          </geometry>
+          <material name="white"/>
+          <origin rpy="0 0 0" xyz="0 0 0"/>
+        </visual>
+        <collision>
+           <geometry>
+             <cylinder length="0.5" radius="0.02"/>
+           </geometry>
+           <origin rpy="0 0 0" xyz="0 0 0"/>
+         </collision>
+         <inertial>
+         <mass value="0.91"/>
+         <inertia ixx="0.02" ixy="0.0" ixz="0.0" iyy="0.02" iyz="0.0" izz="0.1820000000e-3"/>
+         <origin rpy="0 0 0" xyz="0 0 0"/>
+       </inertial>
+      </link>
+
+    <joint name="foot_joint" type="prismatic">
+        <axis xyz="0 0 1"/>
+        <limit effort="1000.0" lower="0" upper="0.5" velocity="1000"/>
+	 <dynamics damping="0.0" friction="0.0"/>
+        <parent link="base_link"/>
+        <child link="leg"/>
+        <origin xyz="0 0 -0.5"/>
+
+      </joint>
+
+      <link name="toe">
+	<contact>
+      <lateral_friction value="1.0"/>
+      </contact>
+      <visual>
+          <geometry>
+            <sphere radius="0.02"/>
+          </geometry>
+          <material name="grey"/>
+        </visual>
+        <collision>
+          <geometry>
+            <sphere radius="0.02"/>
+          </geometry>
+         </collision>
+         <inertial>
+         <mass value="0.01"/>
+         <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+       </inertial>
+
+      </link>
+
+      <joint name="leg_toe" type="fixed">
+          <parent link="leg"/>
+          <child link="toe"/>
+          <origin xyz="0 0 -0.25"/>
+          <!-- <dynamics damping="0.5" friction="1.0"/> -->
+        </joint>
+
+<!--<link name="head">-->
+    <!--<visual>-->
+      <!--<geometry>-->
+        <!--<sphere radius="0.25"/>-->
+      <!--</geometry>-->
+      <!--<material name="blue"/>-->
+    <!--</visual>-->
+  <!--</link>-->
+
+ <!--<joint name="beam_head" type="fixed">-->
+     <!--<parent link="balance_beam"/>-->
+     <!--<child link="head"/>-->
+     <!--<origin xyz="0 0 0"/>-->
+ <!--</joint>-->
+</robot>
