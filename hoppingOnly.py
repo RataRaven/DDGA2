@@ -114,7 +114,7 @@ def evaluate(parameters, realtime, guiEnabled, recordEnabled):
     planeId = p.loadURDF("plane.urdf")
     robotStartPos = [0, 0, 2.2]
     robotStartOrientation = p.getQuaternionFromEuler([0, 0, 0])
-    robotId = p.loadURDF("3d.urdf", robotStartPos, robotStartOrientation, useFixedBase=0)
+    robotId = p.loadURDF("3d_hop_only.urdf", robotStartPos, robotStartOrientation, useFixedBase=0)
     robotPos, robotOrn = p.getBasePositionAndOrientation(robotId)
     p.setJointMotorControlArray(
     robotId,
@@ -127,7 +127,7 @@ def evaluate(parameters, realtime, guiEnabled, recordEnabled):
     energyCost = sum(map(abs, parameters))
     parameters = np.repeat(parameters, TimeSlotSteps)
     torqueList = list(map(convertLogTorqueToLinearTorque, parameters))
-    smoothedTorqueList = scipy.ndimage.filters.gaussian_filter1d(torqueList, 1)
+    smoothedTorqueList = scipy.ndimage.filters.gaussian_filter1d(torqueList, 2)
     totalTorqueList = list(smoothedTorqueList)
     t0 = totalTorqueList
     totalCost = 0
@@ -145,7 +145,7 @@ def evaluate(parameters, realtime, guiEnabled, recordEnabled):
                 contact = p.getContactPoints(bodyA=robotId, linkIndexA=-1)
                 if len(contact) > 0:
                     contactPoint = 1
-                tempList = 100*heightCost - 0.2*torquePenulaty
+                tempList = 100*heightCost - 0.5*torquePenulaty
                 totalCost += tempList
                 if recordEnabled:
                     stepRewardList.append(tempList)
